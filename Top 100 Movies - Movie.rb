@@ -78,7 +78,7 @@ class Scraper
     
   def detailed_movie_initializer(movie_object)
     movie_object.movie_page
-    movie_object.print_detailed_initialize
+    movie_object.print_advanced_details
   end
   
 end
@@ -143,7 +143,7 @@ class CLI
 	end
   
   def basic_generate_all
-	 puts "Here are basic details about the best movies in IMDb's Top 100 Movie List!"
+	 puts "Here are basic details about all the movies in IMDb's Top 100 Movie List!"
 	 puts "Please wait. Scraping all 100 movies will take several minutes. Your patience is greatly appreciated!"
 	 scraper = Scraper.new
 	 all_movies = scraper.initialize_all_movies
@@ -152,7 +152,7 @@ class CLI
   end
 
   def detailed_generate_all
-	 basic_generate_all.each{|movie| movie.print_detailed_initialize}
+	 basic_generate_all.each{|movie| movie.print_advanced_details}
   end
   
 end
@@ -160,16 +160,16 @@ end
 
 class Movie
   
-  #Class variables
+#Class variables
 	@@viewed = []
 	@@my_watchlist = []
 	
-  #Attr Reader Variables
+#Attr Reader Variables
 	attr_reader :imdb_ranking, :index, :title, :director, :year, :rating, :duration, :genres #Reader methods that scrape basic details from IMDb Index Page
 	
 	attr_reader :actors, :characters, :cast, :tagline, :plot, :trivia, :quotes #Reader methods that scrape in-depth details from movie's own IMDb page
 
-  #Initialization method
+#Initialization method
 	def initialize (imdb_ranking = nil) #initializes movie with basic details from IMDb Index Page
 		if imdb_ranking == nil 
 		  user_input
@@ -186,7 +186,7 @@ class Movie
 		self
 	end 
 	
-   #Initialization supporting methods 
+#Initialization supporting methods 
 	def input_requirement(user_input)
 		if user_input >= 1 && user_input <= 100
 			true
@@ -210,7 +210,7 @@ class Movie
       @imdb_ranking
 	end
 	
-	#Basic movie details scraped from summary IMDb Index Page
+#Basic movie details scraped from summary IMDb Index Page
 	def index
 	  @imdb_ranking.to_i - 1
 	end 
@@ -243,8 +243,11 @@ class Movie
 	  index_page.css("span.genre")[index].text.strip
 	end
 	
-  #More in-depth movie details scraped from movie's individual IMDb page
+	def print_basic_details #Prints all the basic details scraped for the user to see
+	  puts "IMDb Top 100 Ranking: #{imdb_ranking}\nMovie title: #{title}\nDirected by: #{director}\nReleased in: #{year}\nGenre(s): #{genres}\nRated: #{rating}\nRuntime: #{duration}"
+	end
 	
+#More in-depth movie details scraped from movie's individual IMDb page
 	def movie_page
 	  Scraper.new.movie_page(self)
 	end
@@ -482,7 +485,7 @@ class Movie
 	  puts "\nThe movie's cast consists of #{cast}"
 	end
 	
-	def detailed_initialize
+	def advanced_details
 	  @tagline = tagline
 	  @plot = plot
 	  @trivia = trivia
@@ -490,14 +493,13 @@ class Movie
 	  self
 	end
 	
-	def print_detailed_initialize
-	  detailed_initialize
+	def print_advanced_details #Prints all the advanced details scraped for the user to see
+	  advanced_details
 	  puts "\nTagline: #{tagline}\nPlot: #{plot}\nTrivia: #{trivia}\nQuotes: #{quotes}"
 	end
 	
-  #Methods that save movies to @@viewed class variable
+#Methods that show or save movies to the @@viewed class variable
   	
-
 	def self.viewed
 		@@viewed
 	end
@@ -511,7 +513,7 @@ class Movie
 	 end
 	end
 	
-	#Methods that add movies to @@my_watchlist class variable
+#Methods that show or save movies to the @@vmy_watchlist class variable
 
 	def self.my_watchlist
 		@@my_watchlist
@@ -539,10 +541,6 @@ class Movie
 		puts movie_titles
 	end
 	#Print methods
-	
-	def print_basic_details
-	  puts "IMDb Top 100 Ranking: #{imdb_ranking}\nMovie title: #{title}\nDirected by: #{director}\nReleased in: #{year}\nGenre(s): #{genres}\nRated: #{rating}\nRuntime: #{duration}"
-	end
 end
 binding.pry
 
