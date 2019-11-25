@@ -529,7 +529,11 @@ class Movie
 	def self.print_my_watchlist
 		puts "Here's your current watchlist: "
 		movie_titles = []
-		self.my_watchlist.each{|movie| movie_titles << movie.title}
+		i = 1
+		self.my_watchlist.each{|movie| 
+		movie_titles << "#{i}. #{movie.title}"
+		i += 1
+		}
 		puts movie_titles
 	end
 	#Print methods
