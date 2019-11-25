@@ -49,28 +49,31 @@ class Scraper
   
   #Prints an array of top 100 movies from IMDb Index Page
 	
-	def self.print_movie_list #Prints an array of top 100 movies from IMDb Index Page
-	  all_titles = []
-	  i = 1
-	  self.index_page.css("h3.lister-item-header a").each {|title| 
-	    all_titles << "#{i}. #{title.text.strip}"
+  def self.print_movie_list #Prints an array of top 100 movies from IMDb Index Page
+	all_titles = []
+	i = 1
+	self.index_page.css("h3.lister-item-header a").each {|title| 
+		all_titles << "#{i}. #{title.text.strip}"
 	    i+=1
-	  }
-	  puts all_titles
-	end
+	 }
+	puts all_titles
+  end
   
   #Methods that either initialize or create movie objects
     
-  def initialize_all_movies
-    i = 0 
-    while i < 100
-      new_movie = Movie.new(i)
-      i+=1
-    end
-  end
-  
   def movie_initializer
     new_movie = Movie.new
+  end
+  
+  def initialize_all_movies
+    i = 0 
+    all_movies = []
+    while i < 100
+      new_movie = Movie.new(i)
+      all_movies << new_movie
+      i+=1
+    end
+    all_movies
   end
     
   def detailed_movie_initializer(movie_object)
@@ -106,22 +109,22 @@ class CLI
           movie.print_trivia
         elsif user_input == 4
           movie.print_quotes
-		    elsif user_input == 5
+		elsif user_input == 5
           movie.print_cast
         end
-		    if Movie.my_watchlist.include?(movie) != true && watchlist_response == nil
-			    puts "\nWould you like to add this movie to your watchlist?"
-			    puts "Please enter 'y' for yes or 'n' for no"
-			    user_input = gets.strip
-			    if user_input == 'y'
-				    watchlist_response = 'y'
-				    movie.add_to_my_watchlist
-			    else
-			      watchlist_response = 'n'
-				    puts "\nNoted. You do not want to add this movie to your watchlist."
-			    end	
-		    end
-		    puts "\nWould you like to know more about #{movie.title}?"
+		if Movie.my_watchlist.include?(movie) != true && watchlist_response == nil
+			puts "\nWould you like to add this movie to your watchlist?"
+			puts "Please enter 'y' for yes or 'n' for no"
+			user_input = gets.strip
+			if user_input == 'y'
+				watchlist_response = 'y'
+				movie.add_to_my_watchlist
+			else
+			    watchlist_response = 'n'
+				puts "\nNoted. You do not want to add this movie to your watchlist."
+			end	
+		end
+		puts "\nWould you like to know more about #{movie.title}?"
         puts "Please enter 'y' for yes or 'n' for no"
         user_input = gets.strip
       end
@@ -129,17 +132,19 @@ class CLI
 	  puts "Would you like to research another movie?"
       puts "Please enter 'y' for yes or 'n' for no"
       user_input = gets.strip.downcase
-  end
-	puts "Would you like to view your watchlist?"
-	puts "Please enter 'y' for yes or 'n' for no"
-  user_input = gets.strip.downcase
-	if user_input == 'y'
+	  end
+	  puts "Would you like to view your watchlist?"
+	  puts "Please enter 'y' for yes or 'n' for no"
+      user_input = gets.strip.downcase
+	  if user_input == 'y'
 		Movie.print_my_watchlist
+	  end
+	  puts "Thank you for using viewing IMDb's Top 100 Movie List!"
 	end
-	puts "Thank you for using viewing IMDb's Top 100 Movie List!"
-  end
   
   def basic_generate_all
+	 puts "Here are basic details about the best movies in IMDb's Top 100 Movie List!"
+	 puts "Please wait. Scraping all 100 movies will take several minutes. Your patience is greatly appreciated!"
 	 scraper = Scraper.new
 	 all_movies = scraper.initialize_all_movies
 	 all_movies.each{|movie| movie.print_basic_details}
@@ -148,12 +153,7 @@ class CLI
 
   def detailed_generate_all
 	 basic_generate_all.each{|movie| movie.print_detailed_initialize}
-	 
-	 
   end
-  
-  
-  
   
 end
 
@@ -161,13 +161,15 @@ end
 class Movie
   
   #Class variables
-  @@viewed = []
-  @@my_watchlist = []
+	@@viewed = []
+	@@my_watchlist = []
 	
+  #Attr Reader Variables
 	attr_reader :imdb_ranking, :index, :title, :director, :year, :rating, :duration, :genres #Reader methods that scrape basic details from IMDb Index Page
 	
 	attr_reader :actors, :characters, :cast, :tagline, :plot, :trivia, :quotes #Reader methods that scrape in-depth details from movie's own IMDb page
-	
+
+  #Initialization method
 	def initialize (imdb_ranking = nil) #initializes movie with basic details from IMDb Index Page
 		if imdb_ranking == nil 
 		  user_input
@@ -184,16 +186,16 @@ class Movie
 		self
 	end 
 	
-		#Methods that detail with user's movie selection 
+   #Initialization supporting methods 
 	def input_requirement(user_input)
-    if user_input >= 1 && user_input <= 100
-      true
-    else
-      false
-    end
-  end
+		if user_input >= 1 && user_input <= 100
+			true
+		else
+			false
+		end
+	end
   
-  def user_input
+	def user_input
       puts "Please enter a movie ranked between 1-100"
       user_input = (gets.strip).to_i
       if input_requirement(user_input) == true
@@ -203,10 +205,10 @@ class Movie
           puts "Invalid user selection. Please enter a index between 1-100."
           user_input = (gets.strip).to_i
         end
-      @imdb_ranking = user_input
+		@imdb_ranking = user_input
       end
       @imdb_ranking
-  end
+	end
 	
 	#Basic movie details scraped from summary IMDb Index Page
 	def index
