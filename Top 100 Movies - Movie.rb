@@ -69,30 +69,15 @@ class Scraper
     end
   end
   
-  def create_all_movies
-    i = 0 
-    while i < 100
-      new_movie = Movie.create(i)
-      i+=1
-    end
-  end
-  
   def movie_initializer
     new_movie = Movie.new
   end
-  
-  def movie_creator
-    new_movie = Movie.create
-  end
-  
+    
   def detailed_movie_initializer(movie_object)
     movie_object.movie_page
     movie_object.print_detailed_initialize
   end
   
-  def detailed_movie_creator
-    
-  end
 end
 
 class CLI
@@ -153,6 +138,23 @@ class CLI
 	end
 	puts "Thank you for using viewing IMDb's Top 100 Movie List!"
   end
+  
+  def basic_generate_all
+	 scraper = Scraper.new
+	 all_movies = scraper.initialize_all_movies
+	 all_movies.each{|movie| movie.print_basic_details}
+	 all_movies
+  end
+
+  def detailed_generate_all
+	 basic_generate_all.each{|movie| movie.print_detailed_initialize}
+	 
+	 
+  end
+  
+  
+  
+  
 end
 
 
@@ -487,10 +489,8 @@ class Movie
 	end
 	
 	def print_detailed_initialize
-	  puts "Tagline: #{tagline}"
-	  puts "Plot: #{plot}"
-	  puts "Trivia: #{trivia}"	
-    puts "Quotes: #{quotes}"
+	  detailed_initialize
+	  puts "\nTagline: #{tagline}\nPlot: #{plot}\nTrivia: #{trivia}\nQuotes: #{quotes}"
 	end
 	
   #Methods that save movies to @@viewed class variable
